@@ -4,4 +4,4 @@ Provides XMLHttpRequest Forms directly into Zeta Ret Zetadmin API:
 - Debug Request  
 - Debug View  
 - Debug Response  
-- Auto/Custom Fields on each request based on command  
+- Auto/Custom Fields for each request based on command  
