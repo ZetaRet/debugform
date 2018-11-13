@@ -20,7 +20,7 @@ function request(p) {
 	var m = p.method || 'POST';
 	var d = p.data || {};
 	var u = p.url;
-	var dt = p.type || 'json';
+	var dt = p.type || (m === 'GET' ? 'url' : 'json');
 	var ct = p.contentType || G.dt.ajs;
 	var pd = p.processData !== undefined ? p.processData : true;
 	var rt = p.responseType || 'json';
@@ -50,7 +50,12 @@ function request(p) {
 			sd = urlParam(d);
 		if (ct === true)
 			ct = G.dt.afue;
+		if (m === 'GET' && pd) {
+			u += '?' + sd;
+		}
 	}
+	if (m === 'GET')
+		sd = null;
 
 	var xhr = new XMLHttpRequest();
 	xhr.onload = function() {
@@ -133,6 +138,7 @@ function debugRequestForm() {
 	var fd = getFormData(drf);
 	request({
 		url: '/api/' + fd.command + '/json/zetaret/',
+		method: fd.method,
 		data: fd,
 		complete: function(rd) {
 			debugResponseData(fd, rd);
@@ -148,7 +154,8 @@ function viewDebugData(rd) {
 	setFormData(document.getElementById("debugview"), rd);
 	setFormData(document.getElementById("debugrequest"), {
 		command: rd.commands,
-		command_data: rd.command_data
+		command_data: rd.command_data,
+		method: ["POST", "GET"]
 	});
 }
 
@@ -229,7 +236,8 @@ function initDebugRequestForm() {
 function ResetDebug() {
 	ClearCustomFields();
 	setFormData(document.getElementById("debugrequest"), {
-		command: ["debugView"]
+		command: ["debugView"],
+		method: ["POST", "GET"]
 	});
 	setFormData(document.getElementById("debugview"), null);
 	setFormData(document.getElementById("debugresponse"), null);
