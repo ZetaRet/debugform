@@ -61,6 +61,10 @@ form select {
 		<button type="button" onclick="AutofillFields()">Autofill Fields</button>
 		<button type="button" onclick="ClearCustomFields()">Clear Fields</button>
 		</field>
+		<field> <label>method</label> <select name="method">
+			<option value="POST">POST</option>
+			<option value="GET">GET</option>
+		</select> </field>
 		<field>
 		<button type="submit">Submit</button>
 		<button type="button" onclick="ResetDebug()">Reset</button>
