@@ -1,3 +1,21 @@
+HTMLDocument.prototype.registerZetaElement = function(name) {
+	this.getElementsByTagName(name).constructZetaElement(name);
+};
+HTMLCollection.prototype.constructZetaElement = function(name) {
+	var un = name.toUpperCase(), l = this.length, i, el;
+	for (i = 0; i < l; i++) {
+		el = this[i];
+		if (el.tagName === un) {
+			el[un + "_constructor"](name);
+			Object.setPrototypeOf(el, HTMLElement.prototype)
+		}
+	}
+};
+
+HTMLUnknownElement.prototype.FIELD_constructor = function(name) {
+	this.setAttribute("zeta-element", name);
+};
+
 var G = {
 	dt: {
 		mpfd: "multipart/form-data",
@@ -244,6 +262,7 @@ function ResetDebug() {
 }
 
 function onInitBody() {
+	document.registerZetaElement('field');
 	initTemplates();
 	initDebugRequestForm();
 	console.log('init body');
