@@ -1,3 +1,14 @@
+/**
+ * Author: Zeta Ret
+ * Zeta Ret Debug Form
+ * Zetadmin API Debug Form
+ * Version: 1.03
+ * Date: 2018 - Today
+ **/
+
+/**
+ * Register Custom HTML Elements by using HTMLUnknownElement
+ */
 HTMLDocument.prototype.__zetaElements = {};
 HTMLDocument.prototype.registerZetaElement = function(name) {
 	this.getElementsByTagName(name).constructZetaElement(name);
@@ -46,17 +57,30 @@ HTMLCollection.prototype.constructZetaElement = function(name, list) {
 	return this;
 };
 
+/**
+ * Custom constructors per TAG name
+ */
 HTMLUnknownElement.prototype.FIELD_constructor = function(name) {
 	this.setAttribute("zeta-element", name);
 };
 
+/**
+ * Global Config
+ */
 var G = {
+	ajax: {
+		base: "/api/",
+		format: "json",
+		api: "zetaret"
+	},
+	__templates: {},
 	dt: {
 		mpfd: "multipart/form-data",
 		ajs: "application/json",
 		afue: "application/x-www-form-urlencoded"
 	}
 };
+
 function urlParam(obj) {
 	var es = '', p;
 	for (p in obj) {
@@ -68,6 +92,7 @@ function urlParam(obj) {
 	}
 	return es;
 }
+
 function request(p) {
 	var m = p.method || 'POST';
 	var d = p.data || {};
@@ -189,7 +214,7 @@ function debugRequestForm() {
 	var drf = document.getElementById("debugrequest");
 	var fd = getFormData(drf);
 	request({
-		url: '/api/' + fd.command + '/json/zetaret/',
+		url: G.ajax.base + fd.command + '/' + G.ajax.format + '/' + G.ajax.api + '/',
 		method: fd.method,
 		data: fd,
 		complete: function(rd) {
@@ -247,7 +272,6 @@ function AutofillFields() {
 	autoSetDebugRequestFields(cs.value);
 }
 
-var __templates = {};
 function initTemplates() {
 	var t = document.getElementById("templates"), ts = t.getElementsByClassName("template"), i, td, tid;
 	for (i = 0; i < ts.length; i++) {
@@ -255,14 +279,14 @@ function initTemplates() {
 		tid = td.getAttribute("tid");
 		td.classList.remove("template");
 		td.classList.add(tid);
-		__templates[tid] = td;
+		G.__templates[tid] = td;
 	}
 	t.parentNode.removeChild(t);
 }
 
 function getTemplate(id) {
-	if (__templates[id]) {
-		return __templates[id].cloneNode(true);
+	if (G.__templates[id]) {
+		return G.__templates[id].cloneNode(true);
 	}
 	return null;
 }
@@ -296,8 +320,8 @@ function ResetDebug() {
 }
 
 function onInitBody() {
-	document.registerZetaElement('field').observeZetaElements();
 	initTemplates();
+	document.registerZetaElement('field').observeZetaElements();
 	initDebugRequestForm();
 	console.log('init body');
 }
