@@ -254,7 +254,7 @@ function AddCustomField(ftn) {
 	ft.getElementsByClassName("cf-label")[0].innerText = ftn;
 	ft.getElementsByClassName("cf-input")[0].setAttribute("name", ftn);
 	ft.getElementsByClassName("cf-button")[0].addEventListener("click", function(e) {
-		ft.remove();
+		ft.parentNode.removeChild(ft);
 	});
 	cf.appendChild(ft);
 }
