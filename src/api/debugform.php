@@ -2,6 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<meta name="author" content="Zeta Ret">
 <title>Zeta Ret Zetadmin Debug Form</title>
 <style type="text/css">
 form field {
