@@ -2,7 +2,7 @@
  * Author: Zeta Ret
  * Zeta Ret Debug Form
  * Zetadmin API Debug Form
- * Version: 1.03
+ * Version: 1.04
  * Date: 2018 - Today
  **/
 
@@ -10,9 +10,10 @@
  * Register Custom HTML Elements by using HTMLUnknownElement
  */
 HTMLDocument.prototype.__zetaElements = {};
-HTMLDocument.prototype.registerZetaElement = function(name) {
-	this.getElementsByTagName(name).constructZetaElement(name);
-	this.__zetaElements[name] = {};
+HTMLDocument.prototype.registerZetaElement = function(name, data, protoElement) {
+	this.__zetaElements[name] = data || {};
+	this.__zetaElements[name].protoElement = protoElement;
+	this.getElementsByTagName(name).constructZetaElement(name, null, protoElement);
 	return this;
 };
 HTMLDocument.prototype.observeZetaElements = function() {
@@ -31,27 +32,30 @@ HTMLDocument.prototype.observeZetaElements = function() {
 	return observer;
 };
 HTMLDocument.prototype.constructZetaElements = function(list) {
-	var zel = this.__zetaElements, name, un, j, el, anl = list.length;
+	var zel = this.__zetaElements, name, un, j, el, anl = list.length, protoElement;
 	for (j = 0; j < anl; j++) {
 		el = list[j];
 		un = el.tagName;
 		name = un ? un.toLowerCase() : null;
 		if (zel[name] && el.constructor === HTMLUnknownElement) {
 			el[un + "_constructor"](name);
-			Object.setPrototypeOf(el, HTMLElement.prototype)
+			protoElement = zel[name].protoElement || HTMLElement;
+			Object.setPrototypeOf(el, protoElement.prototype)
 		}
 	}
 	return this;
 };
-HTMLCollection.prototype.constructZetaElement = function(name, list) {
+HTMLCollection.prototype.constructZetaElement = function(name, list, protoElement) {
 	if (!list)
 		list = this;
 	var un = name.toUpperCase(), l = list.length, i, el;
+	if (!protoElement)
+		protoElement = HTMLElement;
 	for (i = 0; i < l; i++) {
 		el = list[i];
 		if (el.tagName === un && el.constructor === HTMLUnknownElement) {
 			el[un + "_constructor"](name);
-			Object.setPrototypeOf(el, HTMLElement.prototype)
+			Object.setPrototypeOf(el, protoElement.prototype)
 		}
 	}
 	return this;
@@ -321,7 +325,7 @@ function ResetDebug() {
 
 function onInitBody() {
 	initTemplates();
-	document.registerZetaElement('field').observeZetaElements();
+	document.registerZetaElement('field', null, HTMLDivElement).observeZetaElements();
 	initDebugRequestForm();
 	console.log('init body');
 }
