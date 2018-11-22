@@ -2,19 +2,23 @@
  * Author: Zeta Ret
  * Zeta Ret Debug Form
  * Zetadmin API Debug Form
- * Version: 1.04
+ * Version: 1.05
  * Date: 2018 - Today
  **/
 
 /**
- * Register Custom HTML Elements by using HTMLUnknownElement
+ * document prototyping
  */
 HTMLDocument.prototype.__zetaElements = {};
+HTMLDocument.prototype.__zetaObserver = null;
 HTMLDocument.prototype.registerZetaElement = function(name, data, protoElement) {
 	this.__zetaElements[name] = data || {};
 	this.__zetaElements[name].protoElement = protoElement;
 	this.getElementsByTagName(name).constructZetaElement(name, null, protoElement);
 	return this;
+};
+HTMLDocument.prototype.registerZetaConstructor = function(name, constructor) {
+	HTMLUnknownElement.prototype[name.toUpperCase() + '_constructor'] = constructor;
 };
 HTMLDocument.prototype.observeZetaElements = function() {
 	var doc = this, observer = new MutationObserver(function(mutations) {
@@ -25,10 +29,11 @@ HTMLDocument.prototype.observeZetaElements = function() {
 				doc.constructZetaElements(an);
 		}
 	});
-	observer.observe(this.body, {
+	observer.observe(doc.body, {
 		childList: true,
 		subtree: true
 	});
+	doc.__zetaObserver = observer;
 	return observer;
 };
 HTMLDocument.prototype.constructZetaElements = function(list) {
@@ -45,6 +50,20 @@ HTMLDocument.prototype.constructZetaElements = function(list) {
 	}
 	return this;
 };
+HTMLDocument.prototype.registerZetaElementMap = function(map) {
+	var doc = this, k, v;
+	for (k in map) {
+		v = map[k];
+		doc.registerZetaConstructor(k, v.protoConstructor);
+		doc.registerZetaElement(k, v, v.protoElement);
+	}
+	if (!doc.__zetaObserver)
+		doc.observeZetaElements();
+};
+
+/**
+ * HTMLCollection prototyping
+ */
 HTMLCollection.prototype.constructZetaElement = function(name, list, protoElement) {
 	if (!list)
 		list = this;
