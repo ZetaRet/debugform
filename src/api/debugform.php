@@ -48,8 +48,8 @@ form select {
 	display: none;
 }
 </style>
-<script src="/api/js/ProtoHTML.js?r=<?php echo(time());?>" async></script>
-<script src="/api/js/debugform.js?r=<?php echo(time());?>" async></script>
+<script src="/api/js/ProtoHTML.js?r=<?php echo(time());?>" <?php echo(isset($_GET["async"])?"async":"defer");?> ></script>
+<script src="/api/js/debugform.js?r=<?php echo(time());?>" <?php echo(isset($_GET["async"])?"async":"defer");?> ></script>
 </head>
 <body onload="onInitBody()">
 	<h1>Debug Request</h1>
