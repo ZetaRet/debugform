@@ -48,6 +48,7 @@ form select {
 	display: none;
 }
 </style>
+<script src="/api/js/ProtoHTML.js?r=<?php echo(time());?>" async></script>
 <script src="/api/js/debugform.js?r=<?php echo(time());?>" async></script>
 </head>
 <body onload="onInitBody()">
