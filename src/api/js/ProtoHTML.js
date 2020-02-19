@@ -23,8 +23,7 @@ HTMLDocument.prototype.registerZetaConstructor = function(name, construct) {
 HTMLDocument.prototype.observeZetaElements = function(observeOptions) {
 	var doc = this,
 		observer = new MutationObserver(function(mutations) {
-			var l = mutations.length,
-				i, an;
+			var i, an, l = mutations.length;
 			for (i = 0; i < l; i++) {
 				an = mutations[i].addedNodes;
 				if (an && an.length > 0)
