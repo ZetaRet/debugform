@@ -2,7 +2,7 @@
  * Author: Zeta Ret
  * Zeta Ret Proto HTML
  * Register Custom prototypes of HTML Elements by using HTMLUnknownElement
- * Version: 1.05
+ * Version: 1.1.0
  * Date: 2018 - Today
  **/
 
@@ -17,27 +17,33 @@ HTMLDocument.prototype.registerZetaElement = function(name, data, protoElement) 
 	this.getElementsByTagName(name).constructZetaElement(name, null, protoElement);
 	return this;
 };
-HTMLDocument.prototype.registerZetaConstructor = function(name, constructor) {
-	HTMLUnknownElement.prototype[name.toUpperCase() + '_constructor'] = constructor;
+HTMLDocument.prototype.registerZetaConstructor = function(name, construct) {
+	HTMLUnknownElement.prototype[name.toUpperCase() + '_constructor'] = construct;
 };
-HTMLDocument.prototype.observeZetaElements = function() {
-	var doc = this, observer = new MutationObserver(function(mutations) {
-		var l = mutations.length, i, an;
-		for (i = 0; i < l; i++) {
-			an = mutations[i].addedNodes;
-			if (an && an.length > 0)
-				doc.constructZetaElements(an);
-		}
-	});
-	observer.observe(doc.body, {
-		childList: true,
-		subtree: true
-	});
+HTMLDocument.prototype.observeZetaElements = function(observeOptions) {
+	var doc = this,
+		observer = new MutationObserver(function(mutations) {
+			var l = mutations.length,
+				i, an;
+			for (i = 0; i < l; i++) {
+				an = mutations[i].addedNodes;
+				if (an && an.length > 0)
+					doc.constructZetaElements(an);
+			}
+		});
+	if (!observeOptions) {
+		observeOptions = {
+			childList: true,
+			subtree: true
+		};
+	}
+	observer.observe(doc.body, observeOptions);
 	doc.__zetaObserver = observer;
 	return observer;
 };
 HTMLDocument.prototype.constructZetaElements = function(list) {
-	var zel = this.__zetaElements, name, un, j, el, anl = list.length, protoElement;
+	var name, un, j, el, protoElement, zel = this.__zetaElements,
+		anl = list.length;
 	for (j = 0; j < anl; j++) {
 		el = list[j];
 		un = el.tagName;
@@ -51,7 +57,7 @@ HTMLDocument.prototype.constructZetaElements = function(list) {
 	return this;
 };
 HTMLDocument.prototype.registerZetaElementMap = function(map) {
-	var doc = this, k, v;
+	var k, v, doc = this;
 	for (k in map) {
 		v = map[k];
 		doc.registerZetaConstructor(k, v.protoConstructor);
@@ -67,7 +73,8 @@ HTMLDocument.prototype.registerZetaElementMap = function(map) {
 HTMLCollection.prototype.constructZetaElement = function(name, list, protoElement) {
 	if (!list)
 		list = this;
-	var un = name.toUpperCase(), l = list.length, i, el;
+	var i, el, un = name.toUpperCase(),
+		l = list.length;
 	if (!protoElement)
 		protoElement = HTMLElement;
 	for (i = 0; i < l; i++) {
